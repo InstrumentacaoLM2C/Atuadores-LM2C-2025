@@ -28,8 +28,8 @@ namespace Atuadores_LM2C
         bool on_sensor_vertical = false;
         bool on_sensor_horizontal = false;
         bool motorVertical = true;
-        bool ligarMotor_vertical = false;
-        bool ligarMotor_horizontal = false;
+        bool vertical_ligado = false;
+        bool horizontal_ligado = false;
         int motor = 1; // Armazena qual motor está sendo utilizado
         //-----------------------FIM----------------
 
@@ -194,7 +194,7 @@ namespace Atuadores_LM2C
                 }
                 else
                 {
-                    if (ligarMotor_vertical)
+                    if (vertical_ligado)
                     {
                         MessageBox.Show("Desligue o motor vertical antes de desenergizá-lo.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
@@ -231,73 +231,76 @@ namespace Atuadores_LM2C
             return true; // Texto é válido
         }
 
+        private void AtualizarInterfaceMotorVertical(bool ligado)
+        {
+            if (vertical_ligado)
+            {
+                button2.Text = "Ligar";
+                button2.BackColor = Color.Gainsboro;
+                vertical_ligado = false;
+                on_energizar_vertical = false;
+                MessageBox.Show("O motor vertical parou.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                button2.Text = "Ligado";
+                button2.BackColor = Color.Green;
+                vertical_ligado = true;
+                on_energizar_vertical = true;
+            }
+        }
+
+
         private async void button2_Click(object sender, EventArgs e)
         {
+            // 1. Verifica direção
             if (radioButton1.Checked)
-            {
                 direcao1 = "B";
-            }
             else if (radioButton2.Checked)
-            {
                 direcao1 = "C";
-            }
             else
             {
                 MessageBox.Show("Por favor, selecione uma direção.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Verifica se os valores são válidos
+            // 2. Verifica valores válidos de distância e velocidade
             if (!VerificarTextoValido(richTextBox1) || !VerificarTextoValido(richTextBox2))
             {
                 MessageBox.Show("Por favor, insira valores válidos para distância e velocidade.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            button1.Enabled = false; // Evita múltiplos cliques
+            button1.Enabled = false; // Desativa botão enquanto processa
 
             try
             {
-                await Task.Run(async () =>
+                // 3. Constrói o comando
+                string comandoMotor = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "T{0};{1};{2};H#",
+                    distancia_pulsos1,
+                    velocidade_pulsos1,
+                    direcao1
+                );
+
+                // 4. Executa a operação em background
+                await Task.Run(() =>
                 {
-                    // Envia comandos iniciais para preparar o motor
-                    controleSerial.Enviar("M#");
+                    controleSerial.Enviar("M#"); // Inicializa motor
+                    controleSerial.Enviar(comandoMotor); // Envia parâmetros
 
-                    string comando = $"T{distancia_pulsos1.ToString(CultureInfo.InvariantCulture)};" +
-                                     $"{velocidade_pulsos1.ToString(CultureInfo.InvariantCulture)};" +
-                                     $"{direcao1};H#";
+                    Console.WriteLine($"Comando Enviado: {comandoMotor}");
 
-                    controleSerial.Enviar(comando);
-
-                    Console.WriteLine($"Comando Enviado: {comando}");
-
-                    // Se já estava ligado, envia comando para parar
-                    if (ligarMotor_vertical)
+                    if (vertical_ligado)
                     {
-                        controleSerial.Enviar("n#");
+                        controleSerial.Enviar("n#"); // Comando para parar
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
                     }
                 });
 
-                // Atualiza a interface (thread principal)
-                this.Invoke((Action)(() =>
-                {
-                    if (ligarMotor_vertical)
-                    {
-                        button1.Text = "Ligar";
-                        button1.BackColor = Color.Gainsboro;
-                        ligarMotor_vertical = false;
-                        on_energizar_vertical = false;
-                        MessageBox.Show("O motor vertical parou.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        button1.Text = "Ligado";
-                        button1.BackColor = Color.Green;
-                        ligarMotor_vertical = true;
-                        on_energizar_vertical = true;
-                    }
-                }));
+                // 5. Atualiza interface (thread principal)
+                AtualizarInterfaceMotorVertical(vertical_ligado);
             }
             catch (Exception ex)
             {
@@ -309,9 +312,10 @@ namespace Atuadores_LM2C
             }
         }
 
+
         private async void button3_Click(object sender, EventArgs e)
         {
-            if (!ligarMotor_vertical)
+            if (!vertical_ligado)
             {
                 MessageBox.Show("O motor já está parado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -331,7 +335,7 @@ namespace Atuadores_LM2C
                 // Atualiza a UI na thread principal
                 this.Invoke((Action)(() =>
                 {
-                    ligarMotor_vertical = false;
+                    vertical_ligado = false;
                     button3.Text = "Ligar";
                     button3.BackColor = Color.Gainsboro;
 
@@ -393,7 +397,7 @@ namespace Atuadores_LM2C
                 }
                 else
                 {
-                    if (ligarMotor_horizontal)
+                    if (horizontal_ligado)
                     {
                         MessageBox.Show("Desligue o motor vertical antes de desenergizá-lo.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
@@ -453,7 +457,7 @@ namespace Atuadores_LM2C
                     Console.WriteLine($"Comando Enviado: {comando}");
 
                     // Se já estava ligado, envia comando para parar
-                    if (ligarMotor_horizontal)
+                    if (horizontal_ligado)
                     {
                         controleSerial.Enviar("n#");
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
@@ -463,11 +467,11 @@ namespace Atuadores_LM2C
                 // Atualiza a interface (thread principal)
                 this.Invoke((Action)(() =>
                 {
-                    if (ligarMotor_horizontal)
+                    if (horizontal_ligado)
                     {
                         button5.Text = "Ligar";
                         button5.BackColor = SystemColors.Control;
-                        ligarMotor_horizontal = false;
+                        horizontal_ligado = false;
                         on_energizar_horizontal = false;
                         MessageBox.Show("O motor horizontal parou.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
@@ -475,7 +479,7 @@ namespace Atuadores_LM2C
                     {
                         button5.Text = "Ligado";
                         button5.BackColor = Color.Green;
-                        ligarMotor_horizontal = true;
+                        horizontal_ligado = true;
                         on_energizar_horizontal = true;
                     }
                 }));
@@ -492,7 +496,7 @@ namespace Atuadores_LM2C
 
         private async void button4_Click(object sender, EventArgs e)
         {
-            if (!ligarMotor_horizontal)
+            if (!horizontal_ligado)
             {
                 MessageBox.Show("O motor já está parado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -512,7 +516,7 @@ namespace Atuadores_LM2C
                 // Atualiza a UI na thread principal
                 this.Invoke((Action)(() =>
                 {
-                    ligarMotor_horizontal = false;
+                    horizontal_ligado    = false;
                     button4.Text = "Ligar";
                     button4.BackColor = SystemColors.Control;
 

@@ -61,7 +61,7 @@ namespace Atuadores_LM2C
         {
             if (serialPort != null && serialPort.IsOpen)
             {
-                serialPort.WriteLine(mensagem);
+                serialPort.Write(mensagem);
             }
             else
             {
