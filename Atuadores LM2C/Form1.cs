@@ -79,9 +79,7 @@ namespace Atuadores_LM2C
             }
 
             try
-            {
-                controleSerial.Enviar("m#"); // Envia o comando para trocar para motores simultâneos
-
+            { 
                 using (Form3 form3 = new Form3(controleSerial))
                 {
                     form3.ShowDialog(); // Exibe o Form3 de forma modal
@@ -116,11 +114,14 @@ namespace Atuadores_LM2C
 
         private void button4_Click(object sender, EventArgs e)
         {
+            button4.Enabled = false; // Evita cliques duplos
+
             if (!serialConectada)
             {
                 if (comboBox1.SelectedIndex == -1)
                 {
                     MessageBox.Show("Selecione uma porta serial.");
+                    button4.Enabled = true;
                     return;
                 }
 
@@ -130,7 +131,7 @@ namespace Atuadores_LM2C
                     controleSerial.Conectar(porta);
                     serialConectada = true;
                     button4.Text = "Desconectar";
-                    button4.BackColor = Color.Green;
+                    button4.BackColor = Color.Red;
                 }
                 catch (Exception ex)
                 {
@@ -151,6 +152,9 @@ namespace Atuadores_LM2C
                     MessageBox.Show("Erro ao desconectar: " + ex.Message);
                 }
             }
+
+            button4.Enabled = true;
         }
+
     }
 }

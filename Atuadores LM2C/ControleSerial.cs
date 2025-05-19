@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.IO.Ports;
 
@@ -11,6 +7,7 @@ namespace Atuadores_LM2C
     public class ControleSerial : IDisposable
     {
         private SerialPort serialPort;
+        private readonly object lockObj = new object(); // Evita concorrência em leitura/escrita
 
         public event EventHandler<string> DadosRecebidos;
 
@@ -35,37 +32,74 @@ namespace Atuadores_LM2C
             serialPort.Handshake = Handshake.None;
             serialPort.DtrEnable = true;
 
-            serialPort.Open();
+            try
+            {
+                serialPort.Open();
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"Erro ao abrir a porta serial: {ex.Message}", ex);
+            }
         }
 
         public void Desconectar()
         {
-            if (serialPort.IsOpen)
-                serialPort.Close();
+            try
+            {
+                if (serialPort.IsOpen)
+                    serialPort.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro ao desconectar a porta serial: " + ex.Message);
+            }
         }
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
             {
-                string dados = serialPort.ReadLine();
-                DadosRecebidos?.Invoke(this, dados);
+                lock (lockObj)
+                {
+                    string dados = serialPort.ReadLine().Trim();
+                    var handler = DadosRecebidos;
+                    if (handler != null)
+                    {
+                        handler(this, dados);
+                    }
+                }
             }
             catch (Exception ex)
             {
-                DadosRecebidos?.Invoke(this, $"[Erro na leitura serial: {ex.Message}]");
+                var handler = DadosRecebidos;
+                if (handler != null)
+                {
+                    handler(this, $"[Erro na leitura serial: {ex.Message}]");
+                }
             }
         }
 
         public void Enviar(string mensagem)
         {
-            if (serialPort != null && serialPort.IsOpen)
+            if (mensagem == null) return;
+
+            try
             {
-                serialPort.Write(mensagem);
+                lock (lockObj)
+                {
+                    if (serialPort != null && serialPort.IsOpen)
+                    {
+                        serialPort.Write(mensagem);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Porta serial não está conectada.");
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                throw new InvalidOperationException("Porta serial não está conectada.");
+                throw new IOException($"Erro ao enviar dados pela serial: {ex.Message}", ex);
             }
         }
 
@@ -73,16 +107,17 @@ namespace Atuadores_LM2C
         {
             if (serialPort != null)
             {
-                if (serialPort.IsOpen)
-                    serialPort.Close();
+                try
+                {
+                    if (serialPort.IsOpen)
+                        serialPort.Close();
+                }
+                catch { }
 
+                serialPort.DataReceived -= SerialPort_DataReceived;
                 serialPort.Dispose();
                 serialPort = null;
             }
         }
-
-
     }
-
-
 }
