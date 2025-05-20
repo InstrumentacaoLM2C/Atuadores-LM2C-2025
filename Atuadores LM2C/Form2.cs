@@ -362,7 +362,7 @@ namespace Atuadores_LM2C
                 return;
             }
 
-            if (!VerificarTextoValido(richTextBox1) || !VerificarTextoValido(richTextBox2))
+            if (!VerificarTextoValido(richTextBox2) || !VerificarTextoValido(richTextBox3))
             {
                 MessageBox.Show("Por favor, selecione valores válidos para distância e velocidade.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -430,6 +430,7 @@ namespace Atuadores_LM2C
                 await Task.Run(() =>
                 {
                     // Enviar comando para parar o motor
+                    controleSerial.Enviar("M#");
                     controleSerial.Enviar("n#");
                     Console.WriteLine("Comando Enviado: n#");
                 });
@@ -586,7 +587,7 @@ namespace Atuadores_LM2C
 
                     Console.WriteLine($"Comando Enviado: {comando}");
 
-                    if (vertical_ligado)
+                    if (horizontal_ligado)
                     {
                         controleSerial.Enviar("n#");
                         paradaPorBotao2 = true; // <-- Indicando que foi manual
