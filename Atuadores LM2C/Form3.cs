@@ -52,64 +52,63 @@ namespace Atuadores_LM2C
         }
 
 
-       private void ControleSerial_DadosRecebidos(object sender, string dados)
-{
-    if (string.IsNullOrEmpty(dados))
-        return;
-
-    if (this.InvokeRequired)
-    {
-        if (!this.IsHandleCreated || this.IsDisposed)
-            return;
-
-        try
+        private void ControleSerial_DadosRecebidos(object sender, string dados)
         {
-            this.Invoke((MethodInvoker)(() => ControleSerial_DadosRecebidos(sender, dados)));
-        }
-        catch (InvalidOperationException)
-        {
-            return;
-        }
-        return;
-    }
+            if (string.IsNullOrEmpty(dados))
+                return;
 
-    if (!this.IsHandleCreated || this.IsDisposed)
-        return;
+            if (this.InvokeRequired)
+            {
+                if (!this.IsHandleCreated || this.IsDisposed)
+                    return;
 
-    try
-    {
-        richTextBox4.AppendText(dados + Environment.NewLine);
-
-        char comando = dados[0];
-
-        switch (comando)
-        {
-            case 'y':
-                if (motor_ligado)
+                try
                 {
-                    AtualizarInterfaceMotor(motor_ligado);
-
-                    if (paradaPorBotao)
-                    {
-                        paradaPorBotao = false;
-                    }
-                    else
-                    {
-                        
-                    }
+                    this.Invoke((MethodInvoker)(() => ControleSerial_DadosRecebidos(sender, dados)));
                 }
-                break;
+                catch (InvalidOperationException)
+                {
+                    return;
+                }
+                return;
+            }
 
-            default:
-                break;
+            if (!this.IsHandleCreated || this.IsDisposed)
+                return;
+
+            try
+            {
+              
+                char comando = dados[0];
+
+                switch (comando)
+                {
+                    case 'y':
+                        if (motor_ligado)
+                        {
+                            AtualizarInterfaceMotor(motor_ligado);
+
+                            if (paradaPorBotao)
+                            {
+                                paradaPorBotao = false;
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                
+                    
+            }
         }
-    }
-    catch (Exception ex)
-    {
-        if (this.IsHandleCreated && !this.IsDisposed)
-            richTextBox4.AppendText("[Erro na interface: " + ex.Message + "]" + Environment.NewLine);
-    }
-}
 
 
 
