@@ -41,10 +41,10 @@
             // 
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel1.BackgroundImage = global::Atuadores_LM2C.Properties.Resources.LM2C_Retina___Copia;
-            this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.panel1.Location = new System.Drawing.Point(150, 50);
+            this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.panel1.Location = new System.Drawing.Point(201, 124);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(300, 200);
+            this.panel1.Size = new System.Drawing.Size(204, 119);
             this.panel1.TabIndex = 0;
             // 
             // button1
@@ -114,6 +114,7 @@
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "LM2C";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);

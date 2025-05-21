@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Globalization;
-using System.IO.Ports;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
@@ -256,15 +250,25 @@ namespace Atuadores_LM2C
         {
             if (!ligado)
             {
-                button2.Text = "Ligado";
-                button2.BackColor = Color.Green;
+                button2.Text = "Parar";
+                button2.BackColor = Color.Red;
+                button2.Enabled = true;
                 motor_ligado = true;
+                button1.Text = "Acoplado";
+                button1.BackColor = Color.Green;
+                button1.Enabled = false;
+                motor_energizado = true;
             }
             else
             {
                 button2.Text = "Ligar";
                 button2.BackColor = SystemColors.Control;
+                button2.Enabled = true;
                 motor_ligado = false;
+                button1.Text = "Acoplar";
+                button1.BackColor = SystemColors.Control;
+                button1.Enabled = true;
+                motor_energizado = false;
                 MessageBox.Show("O motor vertical parou!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -338,81 +342,6 @@ namespace Atuadores_LM2C
                 button2.Enabled = true;
             }
         }
-
-
-        private async void button3_Click(object sender, EventArgs e)
-        {
-            if (!motor_ligado)
-            {
-                MessageBox.Show("O motor já está parado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            try
-            {
-                button3.Enabled = false; // Desativa o botão enquanto executa o comando
-
-                await Task.Run(() =>
-                {
-                    // Enviar comando para parar o motor
-                    controleSerial.Enviar("n#");
-                    Console.WriteLine("Comando Enviado: n#");
-                });
-
-                // Atualiza a UI na thread principal
-                this.Invoke((Action)(() =>
-                {
-                    motor_ligado = false;
-                    button2.Text = "Ligar";
-                    button2.BackColor = SystemColors.Control;
-
-                    MessageBox.Show("O motor foi parado com sucesso!", "Informação", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }));
-            }
-            catch (UnauthorizedAccessException)
-            {
-                MessageBox.Show("Acesso negado à porta serial. " +
-                                "Verifique se a porta já está em uso ou se você tem permissão para acessá-la.",
-                                "Erro de Acesso",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-            }
-            catch (OperationCanceledException)
-            {
-                // Task cancelada, sem ação necessária
-            }
-            catch (InvalidOperationException)
-            {
-                MessageBox.Show("A operação não pôde ser completada. " +
-                                "Verifique se a porta serial está aberta e configurada corretamente.",
-                                "Erro de Operação",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show("Falha de comunicação ao tentar parar o motor. " +
-                                "Certifique-se de que o dispositivo está conectado corretamente.\n\n" +
-                                $"Detalhes do erro: {ex.Message}",
-                                "Erro de Comunicação",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Não foi possível parar o motor. " +
-                                "Uma falha inesperada ocorreu. Tente novamente.\n\n" +
-                                $"Detalhes do erro: {ex.Message}",
-                                "Erro Desconhecido",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-            }
-            finally
-            {
-                button3.Enabled = true; // Reativa o botão após a execução
-            }
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             if (motor_ligado)
