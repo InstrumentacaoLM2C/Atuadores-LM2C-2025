@@ -583,6 +583,12 @@ namespace Atuadores_LM2C
             }
         }
 
+        private void btnAjuda_Click(object sender, EventArgs e)
+        {
+            Form2_Ajuda form2_ajuda = new Form2_Ajuda();
+            form2_ajuda.ShowDialog();
+        }
+
         private void richTextBox3_TextChanged(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(richTextBox3.Text))

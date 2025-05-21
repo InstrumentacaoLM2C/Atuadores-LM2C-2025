@@ -420,5 +420,11 @@ namespace Atuadores_LM2C
 
             CancelarTarefasForm();
         }
+
+        private void btnAjuda_Click(object sender, EventArgs e)
+        {
+            Form3_Ajuda form3_ajuda = new Form3_Ajuda();
+            form3_ajuda.ShowDialog();
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace Atuadores_LM2C
         private void Form1_Load(object sender, EventArgs e)
         {
             controleSerial = new ControleSerial();
+            
         }
 
         void obterPortas()
@@ -156,5 +157,21 @@ namespace Atuadores_LM2C
             button4.Enabled = true;
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnAjuda_Click(object sender, EventArgs e)
+        {
+            Form1_Ajuda form1_ajuda = new Form1_Ajuda();
+            form1_ajuda.ShowDialog();
+        }
+
+        private void btnAjuda_Click_1(object sender, EventArgs e)
+        {
+            Form1_Ajuda form1_ajuda = new Form1_Ajuda();
+            form1_ajuda.ShowDialog();
+        }
     }
 }
