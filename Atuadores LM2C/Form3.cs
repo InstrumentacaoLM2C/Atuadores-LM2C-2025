@@ -72,6 +72,7 @@ namespace Atuadores_LM2C
 
             try
             {
+                richTextBox4.AppendText(dados);
               
                 char comando = dados[0];
 
@@ -277,11 +278,11 @@ namespace Atuadores_LM2C
         {
             if (radioButton1.Checked && !radioButton2.Checked)
             {
-                direcao = "1";
+                direcao = "B";
             }
             else if (!radioButton1.Checked && radioButton2.Checked)
             {
-                direcao = "0";
+                direcao = "C";
             }
             else
             {
@@ -303,11 +304,11 @@ namespace Atuadores_LM2C
                 string comando = string.Format(
                     CultureInfo.InvariantCulture,
                     "W{0};{1};{2};{3};{4};H#",
-            distancia_pulsos1,
-            velocidade_pulsos1,
-            distancia_pulsos2,
-            velocidade_pulsos2,
-            direcao
+                    distancia_pulsos1,
+                    velocidade_pulsos1,
+                    distancia_pulsos2,
+                    velocidade_pulsos2,
+                    direcao
                 );
 
                 await Task.Run(() =>

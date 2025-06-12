@@ -173,5 +173,11 @@ namespace Atuadores_LM2C
             Form1_Ajuda form1_ajuda = new Form1_Ajuda();
             form1_ajuda.ShowDialog();
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Form4 form4 = new Form4();
+            form4.ShowDialog();
+        }
     }
 }

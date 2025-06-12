@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form3_Ajuda));
             this.button2 = new System.Windows.Forms.Button();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
@@ -40,6 +42,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // button2
@@ -52,6 +55,7 @@
             this.button2.TabIndex = 39;
             this.button2.Text = "Ligar";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // radioButton2
             // 
@@ -64,6 +68,7 @@
             this.radioButton2.TabStop = true;
             this.radioButton2.Text = "Descer";
             this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
             // radioButton1
             // 
@@ -76,6 +81,7 @@
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "Subir";
             this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // button1
             // 
@@ -87,6 +93,7 @@
             this.button1.TabIndex = 36;
             this.button1.Text = "Acoplar";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label6
             // 
@@ -118,6 +125,8 @@
             this.richTextBox3.Size = new System.Drawing.Size(228, 38);
             this.richTextBox3.TabIndex = 33;
             this.richTextBox3.Text = "";
+            this.richTextBox3.TextChanged += new System.EventHandler(this.richTextBox3_TextChanged);
+            this.richTextBox3.Enter += new System.EventHandler(this.richTextBox3_Enter);
             // 
             // label4
             // 
@@ -138,6 +147,8 @@
             this.richTextBox2.Size = new System.Drawing.Size(228, 38);
             this.richTextBox2.TabIndex = 31;
             this.richTextBox2.Text = "";
+            this.richTextBox2.TextChanged += new System.EventHandler(this.richTextBox2_TextChanged);
+            this.richTextBox2.Enter += new System.EventHandler(this.richTextBox2_Enter);
             // 
             // label3
             // 
@@ -158,6 +169,8 @@
             this.richTextBox1.Size = new System.Drawing.Size(228, 38);
             this.richTextBox1.TabIndex = 29;
             this.richTextBox1.Text = "";
+            this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
+            this.richTextBox1.Enter += new System.EventHandler(this.richTextBox1_Enter);
             // 
             // label1
             // 
@@ -187,8 +200,10 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form3_Ajuda";
-            this.Text = "Form3_Ajuda";
+            this.Text = "Ajuda";
+            this.Load += new System.EventHandler(this.Form3_Ajuda_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -208,5 +223,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
