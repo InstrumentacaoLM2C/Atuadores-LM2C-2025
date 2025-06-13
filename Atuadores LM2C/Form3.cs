@@ -180,7 +180,7 @@ namespace Atuadores_LM2C
                     if (constanteCalibracao1 != 0)
                         velocidade_pulsos1 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
 
-                    velocidade_pulsos2 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
+                        velocidade_pulsos2 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
                 }
                 else
                 {
