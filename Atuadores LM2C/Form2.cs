@@ -22,7 +22,15 @@ namespace Atuadores_LM2C
         double distancia_pulsos2;
         double velocidade_pulsos1;
         double velocidade_pulsos2;
+#pragma warning disable CS0649 // Campo "Form2.distancia_mm2" nunca é atribuído e sempre terá seu valor padrão 0
+#pragma warning disable CS0649 // Campo "Form2.distancia_mm1" nunca é atribuído e sempre terá seu valor padrão 0
+#pragma warning disable CS0649 // Campo "Form2.velocidade_mm2" nunca é atribuído e sempre terá seu valor padrão 0
+#pragma warning disable CS0649 // Campo "Form2.velocidade_mm1" nunca é atribuído e sempre terá seu valor padrão 0
         double velocidade_mm1, velocidade_mm2, distancia_mm1, distancia_mm2;
+#pragma warning restore CS0649 // Campo "Form2.velocidade_mm1" nunca é atribuído e sempre terá seu valor padrão 0
+#pragma warning restore CS0649 // Campo "Form2.velocidade_mm2" nunca é atribuído e sempre terá seu valor padrão 0
+#pragma warning restore CS0649 // Campo "Form2.distancia_mm1" nunca é atribuído e sempre terá seu valor padrão 0
+#pragma warning restore CS0649 // Campo "Form2.distancia_mm2" nunca é atribuído e sempre terá seu valor padrão 0
         double constanteCalibracao1 = 1;  //A constante de calibração default dos motores que representa a velocidade de aceleração de 2500pulsos/s
         double constanteCalibracao2 = 1;
         bool vertical_energizado = false;
@@ -65,6 +73,7 @@ namespace Atuadores_LM2C
             if (!this.IsHandleCreated || this.IsDisposed)
                 return;
 
+#pragma warning disable CS0168 // A variável foi declarada, mas nunca foi usada
             try
             {
                 char comando = dados[0];
@@ -110,6 +119,7 @@ namespace Atuadores_LM2C
             catch (Exception ex)
             {
             }  
+#pragma warning restore CS0168 // A variável foi declarada, mas nunca foi usada
                   
         }
 

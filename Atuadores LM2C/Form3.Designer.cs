@@ -109,6 +109,7 @@
             this.label4.Size = new System.Drawing.Size(175, 28);
             this.label4.TabIndex = 16;
             this.label4.Text = "Velocidade (mm/s)";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // richTextBox2
             // 

@@ -176,8 +176,8 @@ namespace Atuadores_LM2C
 
         private void button5_Click(object sender, EventArgs e)
         {
-            Form4 form4 = new Form4();
-            form4.ShowDialog();
+           FormCalibrar form4 = new FormCalibrar(controleSerial);
+            form4.Show();
         }
     }
 }

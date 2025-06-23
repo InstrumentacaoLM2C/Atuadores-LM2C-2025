@@ -31,6 +31,8 @@ namespace Atuadores_LM2C
             serialPort.StopBits = StopBits.One;
             serialPort.Handshake = Handshake.None;
             serialPort.DtrEnable = true;
+            serialPort.ReadTimeout = 1000; // 1000 ms
+            serialPort.WriteTimeout = 1000; // 1000 ms
 
             try
             {
@@ -48,6 +50,8 @@ namespace Atuadores_LM2C
             {
                 if (serialPort.IsOpen)
                     serialPort.Close();
+
+                serialPort.DataReceived -= SerialPort_DataReceived; // Desanexar evento
             }
             catch (Exception ex)
             {
@@ -61,7 +65,7 @@ namespace Atuadores_LM2C
             {
                 lock (lockObj)
                 {
-                    string dados = serialPort.ReadLine().Trim();
+                    string dados = serialPort.ReadExisting().Trim();
                     var handler = DadosRecebidos;
                     if (handler != null)
                     {
@@ -89,7 +93,7 @@ namespace Atuadores_LM2C
                 {
                     if (serialPort != null && serialPort.IsOpen)
                     {
-                        serialPort.Write(mensagem);
+                        serialPort.WriteLine(mensagem);
                     }
                     else
                     {

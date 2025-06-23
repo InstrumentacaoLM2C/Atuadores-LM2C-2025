@@ -42,7 +42,7 @@
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(139, 325);
+            this.label2.Location = new System.Drawing.Point(144, 295);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(238, 28);
             this.label2.TabIndex = 49;
@@ -70,22 +70,24 @@
             this.button2.TabIndex = 47;
             this.button2.Text = "Acionar Motor";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // richTextBox3
             // 
             this.richTextBox3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox3.Location = new System.Drawing.Point(149, 356);
+            this.richTextBox3.Location = new System.Drawing.Point(149, 326);
             this.richTextBox3.Name = "richTextBox3";
             this.richTextBox3.Size = new System.Drawing.Size(228, 38);
             this.richTextBox3.TabIndex = 46;
             this.richTextBox3.Text = "";
+            this.richTextBox3.TextChanged += new System.EventHandler(this.richTextBox3_TextChanged);
             // 
             // label3
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(173, 266);
+            this.label3.Location = new System.Drawing.Point(179, 251);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(174, 28);
             this.label3.TabIndex = 45;
@@ -96,11 +98,12 @@
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(129, 170);
+            this.label1.Location = new System.Drawing.Point(131, 182);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(265, 38);
             this.label1.TabIndex = 43;
             this.label1.Text = "Calibração Motores";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // button1
             // 
@@ -128,6 +131,7 @@
             this.Controls.Add(this.label1);
             this.Name = "Form5";
             this.Text = "Form5";
+            this.Load += new System.EventHandler(this.Form5_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

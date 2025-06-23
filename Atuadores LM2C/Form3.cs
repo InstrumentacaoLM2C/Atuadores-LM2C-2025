@@ -72,8 +72,6 @@ namespace Atuadores_LM2C
 
             try
             {
-                richTextBox4.AppendText(dados);
-              
                 char comando = dados[0];
 
                 switch (comando)
@@ -174,13 +172,13 @@ namespace Atuadores_LM2C
 
 
                 // Tenta converter a string para float
-                if (float.TryParse(inputVelocidade1, NumberStyles.Any, new CultureInfo("pt-BR"), out float velocidade_mm1))
+                if (float.TryParse(inputVelocidade1, NumberStyles.Any, new CultureInfo("pt-BR"), out float velocidade))
                 {
                     // Calcula os pulsos com base no valor convertido
                     if (constanteCalibracao1 != 0)
-                        velocidade_pulsos1 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
+                        velocidade_pulsos1 = (float)Math.Round(velocidade / constanteCalibracao1);
 
-                        velocidade_pulsos2 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
+                        velocidade_pulsos2 = (float)Math.Round(velocidade / constanteCalibracao1);
                 }
                 else
                 {
@@ -203,11 +201,11 @@ namespace Atuadores_LM2C
                 string inputDistancia1 = richTextBox3.Text.Replace('.', ',');
 
                 // Tenta converter a string para float
-                if (float.TryParse(inputDistancia1, NumberStyles.Any, new CultureInfo("pt-BR"), out float distancia_mm1))
+                if (float.TryParse(inputDistancia1, NumberStyles.Any, new CultureInfo("pt-BR"), out float distancia))
                 {
                     // Calcula os pulsos com base no valor convertido
                     if (constanteCalibracao1 != 0)
-                        distancia_pulsos1 = (float)Math.Round(distancia_mm1 / constanteCalibracao1);
+                        distancia_pulsos1 = (float)Math.Round(distancia / constanteCalibracao1);
 
                         distancia_pulsos2 = distancia_pulsos1;
                 }
@@ -296,43 +294,48 @@ namespace Atuadores_LM2C
                 return;
             }
 
-            button2.Enabled = false; // Evita múltiplos cliques
-            
+            button2.Enabled = false; // Bloqueia múltiplos cliques
 
             try
             {
-                string comando = string.Format(
-                    CultureInfo.InvariantCulture,
-                    "W{0};{1};{2};{3};{4};H#",
-                    distancia_pulsos1,
-                    velocidade_pulsos1,
-                    distancia_pulsos2,
-                    velocidade_pulsos2,
-                    direcao
-                );
-
-                await Task.Run(() =>
+                if (!motor_ligado)
                 {
-                    controleSerial.Enviar("m#");
-                    controleSerial.Enviar(comando);
+                    string comando = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "W{0};{1};{2};{3};{4};H#\n",
+                        distancia_pulsos1,
+                        velocidade_pulsos1,
+                        distancia_pulsos2,
+                        velocidade_pulsos2,
+                        direcao
+                    );
 
-                    Console.WriteLine($"Comando Enviado: {comando}");
-
-                    if (motor_ligado)
+                    await Task.Run(() =>
                     {
-                        controleSerial.Enviar("n#");
-                        paradaPorBotao = true; // <-- Indicando que foi manual
+                        controleSerial.Enviar("m#\n");
+                        controleSerial.Enviar(comando);
+                        Console.WriteLine($"Comando Enviado: {comando}");
+                    });
+
+                    motor_ligado = true;
+                    AtualizarInterfaceMotor(false); // Passa FALSE para atualizar corretamente o botão para "Parar"
+                }
+                else
+                {
+                    await Task.Run(() =>
+                    {
+                        controleSerial.Enviar("n#\n");
+                        paradaPorBotao = true;
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
-                    }
-                });
+                    });
 
-                // Atualiza interface na thread principal
-                AtualizarInterfaceMotor(motor_ligado);
-
+                    motor_ligado = false;
+                    AtualizarInterfaceMotor(true); // Passa TRUE para atualizar corretamente o botão para "Ligar"
+                }
             }
             catch (OperationCanceledException)
             {
-                // Task foi cancelada, pode ignorar
+                // Ignorar cancelamento
             }
             catch (Exception ex)
             {
@@ -340,9 +343,10 @@ namespace Atuadores_LM2C
             }
             finally
             {
-                button2.Enabled = true;
+                button2.Enabled = true; // Reabilita o botão
             }
         }
+
         private void button1_Click(object sender, EventArgs e)
         {
             if (motor_ligado)
@@ -356,14 +360,14 @@ namespace Atuadores_LM2C
                 if (motor_energizado)
                 {
                     // Enviar comando para energizar o motor
-                    controleSerial.Enviar("#A");
+                    controleSerial.Enviar("#A\n");
                     button1.Text = "Acoplado";
                     button1.BackColor = Color.Green;
                 }
                 else
                 {
                     // Enviar comando para desenergizar o motor
-                    controleSerial.Enviar("#a");
+                    controleSerial.Enviar("#a\n");
                     button1.Text = "Acoplar";
                     button1.BackColor = SystemColors.Control;
                 }
@@ -410,7 +414,7 @@ namespace Atuadores_LM2C
 
                 if (motor_ligado)
                 {
-                    controleSerial.Enviar("n#");  // Parar motor
+                    controleSerial.Enviar("n#\n");  // Parar motor
                     motor_ligado = false;
                 }
             }
@@ -426,6 +430,11 @@ namespace Atuadores_LM2C
         {
             Form3_Ajuda form3_ajuda = new Form3_Ajuda();
             form3_ajuda.ShowDialog();
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

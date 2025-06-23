@@ -13,9 +13,72 @@ namespace Atuadores_LM2C
 {
     public partial class Form6 : Form
     {
-        public Form6()
+
+        private ControleSerial controleSerial;
+        public Form6(ControleSerial serial)
         {
             InitializeComponent();
+
+            controleSerial = serial ?? throw new ArgumentNullException(nameof(serial));
+            controleSerial.DadosRecebidos += ControleSerial_DadosRecebidos;
+
+        }
+
+        private void ControleSerial_DadosRecebidos(object sender, string dados)
+        {
+            if (string.IsNullOrEmpty(dados))
+                return;
+
+            if (this.InvokeRequired)
+            {
+                if (!this.IsHandleCreated || this.IsDisposed)
+                    return;
+
+                try
+                {
+                    this.Invoke((MethodInvoker)(() => ControleSerial_DadosRecebidos(sender, dados)));
+                }
+                catch (InvalidOperationException)
+                {
+                    return;
+                }
+                return;
+            }
+
+            if (!this.IsHandleCreated || this.IsDisposed)
+                return;
+
+            try
+            {
+                char comando = dados[0];
+
+                switch (comando)
+                {
+                    case 'y':
+                        /*if (motor_ligado)
+                        {
+                            AtualizarInterfaceMotor(motor_ligado);
+
+                            if (paradaPorBotao)
+                            {
+                                paradaPorBotao = false;
+                            }
+                            else
+                            {
+
+                            }
+                        }*/
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+
+
+            }
         }
 
         private void Form6_Load(object sender, EventArgs e)
@@ -70,6 +133,11 @@ namespace Atuadores_LM2C
             // Ajusta os títulos dos eixos
             chart1.ChartAreas[0].AxisX.Title = "Distância (mm)";
             chart1.ChartAreas[0].AxisY.Title = "Passos";
+        }
+
+        private void chart1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
