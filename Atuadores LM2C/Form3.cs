@@ -300,6 +300,7 @@ namespace Atuadores_LM2C
             {
                 if (!motor_ligado)
                 {
+
                     string comando = string.Format(
                         CultureInfo.InvariantCulture,
                         "W{0};{1};{2};{3};{4};H#\n",
@@ -310,9 +311,11 @@ namespace Atuadores_LM2C
                         direcao
                     );
 
+                    Console.WriteLine($"Comando: {comando}");
+
                     await Task.Run(() =>
                     {
-                        controleSerial.Enviar("m#\n");
+                        controleSerial.Enviar("m#");
                         controleSerial.Enviar(comando);
                         Console.WriteLine($"Comando Enviado: {comando}");
                     });
@@ -325,6 +328,7 @@ namespace Atuadores_LM2C
                     await Task.Run(() =>
                     {
                         controleSerial.Enviar("n#\n");
+                        controleSerial.Enviar("a#\n");
                         paradaPorBotao = true;
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
                     });
