@@ -65,7 +65,7 @@ namespace Atuadores_LM2C
             {
                 lock (lockObj)
                 {
-                    string dados = serialPort.ReadExisting().Trim();
+                    string dados = serialPort.ReadLine().Trim();
                     Console.WriteLine("Serial port: " + dados);
                     var handler = DadosRecebidos;
                     if (handler != null)

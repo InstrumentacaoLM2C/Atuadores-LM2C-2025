@@ -303,7 +303,7 @@ namespace Atuadores_LM2C
 
                     string comando = string.Format(
                         CultureInfo.InvariantCulture,
-                        "W{0};{1};{2};{3};{4};H#\n",
+                        "W{0};{1};{2};{3};{4};H#",
                         distancia_pulsos1,
                         velocidade_pulsos1,
                         distancia_pulsos2,
@@ -316,6 +316,7 @@ namespace Atuadores_LM2C
                     await Task.Run(() =>
                     {
                         controleSerial.Enviar("m#");
+                        controleSerial.Enviar("A#");
                         controleSerial.Enviar(comando);
                         Console.WriteLine($"Comando Enviado: {comando}");
                     });
@@ -327,8 +328,8 @@ namespace Atuadores_LM2C
                 {
                     await Task.Run(() =>
                     {
-                        controleSerial.Enviar("n#\n");
-                        controleSerial.Enviar("a#\n");
+                        controleSerial.Enviar("n#");
+                        controleSerial.Enviar("a#");
                         paradaPorBotao = true;
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
                     });
@@ -364,14 +365,14 @@ namespace Atuadores_LM2C
                 if (motor_energizado)
                 {
                     // Enviar comando para energizar o motor
-                    controleSerial.Enviar("#A\n");
+                    controleSerial.Enviar("A#");
                     button1.Text = "Acoplado";
                     button1.BackColor = Color.Green;
                 }
                 else
                 {
                     // Enviar comando para desenergizar o motor
-                    controleSerial.Enviar("#a\n");
+                    controleSerial.Enviar("a#");
                     button1.Text = "Acoplar";
                     button1.BackColor = SystemColors.Control;
                 }
@@ -418,7 +419,7 @@ namespace Atuadores_LM2C
 
                 if (motor_ligado)
                 {
-                    controleSerial.Enviar("n#\n");  // Parar motor
+                    controleSerial.Enviar("n#");  // Parar motor
                     motor_ligado = false;
                 }
             }
