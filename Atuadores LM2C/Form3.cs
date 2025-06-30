@@ -29,7 +29,7 @@ namespace Atuadores_LM2C
         float velocidade_pulsos1 = 0.0f;
         float velocidade_pulsos2 = 0.0f;
         double constanteCalibracao1 = 1;  //A constante de calibração default dos motores que representa a velocidade de aceleração de 2500pulsos/s
-        bool motor_energizado = true;
+        bool motor_energizado = false;
         bool motor_ligado = false;
 
         //------------- FIM ----------------
@@ -268,12 +268,14 @@ namespace Atuadores_LM2C
                 button1.BackColor = SystemColors.Control;
                 button1.Enabled = true;
                 motor_energizado = false;
-                MessageBox.Show("O motor vertical parou!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Os motores pararam!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         private async void button2_Click(object sender, EventArgs e)
         {
+            //RecalcularDistanciaEVelocidade();
+
             if (radioButton1.Checked && !radioButton2.Checked)
             {
                 direcao = "B";
@@ -362,7 +364,7 @@ namespace Atuadores_LM2C
 
             try
             {
-                if (motor_energizado)
+                if (motor_energizado == false)
                 {
                     // Enviar comando para energizar o motor
                     controleSerial.Enviar("A#");

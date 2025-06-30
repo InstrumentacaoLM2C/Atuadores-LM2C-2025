@@ -70,10 +70,6 @@ namespace Atuadores_LM2C
                 return;
             }
 
-            if (!this.IsHandleCreated || this.IsDisposed)
-                return;
-
-#pragma warning disable CS0168 // A variável foi declarada, mas nunca foi usada
             try
             {
                 char comando = dados[0];
@@ -83,7 +79,7 @@ namespace Atuadores_LM2C
                     case 'y':
                         if (vertical_ligado)
                         {
-                            AtualizarInterfaceVertical(vertical_ligado);
+                            AtualizarInterfaceMotorVertical(vertical_ligado);
 
                             if (paradaPorBotao1)
                             {
@@ -99,7 +95,7 @@ namespace Atuadores_LM2C
                     case 'Y':
                         if (horizontal_ligado)
                         {
-                            AtualizarInterfaceHorizontal(horizontal_ligado);
+                            AtualizarInterfaceMotorHorizontal(horizontal_ligado);
 
                             if (paradaPorBotao2)
                             {
@@ -167,18 +163,18 @@ namespace Atuadores_LM2C
 
         private void richTextBox6_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(richTextBox6.Text))
+            if (!string.IsNullOrWhiteSpace(richTextBox1.Text))
             {
                 // Substitui pontos por vírgulas para o formato brasileiro
-                string inputDistancia2 = richTextBox6.Text.Replace('.', ',');
+                string inputConstanteCalibracao2 = richTextBox6.Text.Replace('.', ',');
 
-                // Tenta converter a string para float
-                if (float.TryParse(inputDistancia2, NumberStyles.Any, new CultureInfo("pt-BR"), out float distancia_mm2))
+                // Tenta converter a string para double
+                if (double.TryParse(inputConstanteCalibracao2, NumberStyles.Any, new CultureInfo("pt-BR"), out double valorConvertido))
                 {
-                    // Calcula os pulsos com base no valor convertido
-                    if (constanteCalibracao2 != 0)
-                        distancia_pulsos2 = (float)Math.Round(distancia_mm2 / constanteCalibracao2);
+                    constanteCalibracao2 = valorConvertido; // Atualiza apenas se a conversão for bem-sucedida
 
+                    // Agora recalcula as variáveis de distância e velocidade com a nova constante de calibração
+                    RecalcularDistanciaEVelocidade();
                 }
                 else
                 {
@@ -187,9 +183,10 @@ namespace Atuadores_LM2C
             }
             else
             {
-                // Define valores padrão caso o campo fique vazio
-                distancia_pulsos2 = 0;
+                constanteCalibracao2= 1; // Define um valor padrão quando o campo está vazio
 
+                // Recalcula as variáveis de distância e velocidade com o valor padrão
+                RecalcularDistanciaEVelocidade();
             }
         }
 
@@ -224,7 +221,7 @@ namespace Atuadores_LM2C
             if (!string.IsNullOrWhiteSpace(richTextBox6.Text))
             {
                 // Substitui pontos por vírgulas para o formato brasileiro
-                string inputDistancia2 = richTextBox6.Text.Replace('.', ',');
+                string inputDistancia2 = richTextBox4.Text.Replace('.', ',');
 
                 // Tenta converter a string para float
                 if (float.TryParse(inputDistancia2, NumberStyles.Any, new CultureInfo("pt-BR"), out float distancia_mm2))
@@ -259,7 +256,7 @@ namespace Atuadores_LM2C
             {
                 controleSerial.Enviar("M#"); // Seleciona motor vertical
 
-                if (vertical_energizado)
+                if (vertical_energizado == false)
                 {
                     // Enviar comando para energizar o motor
                     controleSerial.Enviar("#A");
@@ -321,12 +318,14 @@ namespace Atuadores_LM2C
             return true; // Texto é válido
         }
 
-        private void AtualizarInterfaceVertical(bool ligado)
+     
+        private void AtualizarInterfaceMotorVertical(bool ligado)
         {
             if (!ligado)
             {
                 button2.Text = "Parar";
                 button2.BackColor = Color.Red;
+                button2.Enabled = true;
                 vertical_ligado = true;
                 button1.Text = "Acoplado";
                 button1.BackColor = Color.Green;
@@ -337,21 +336,23 @@ namespace Atuadores_LM2C
             {
                 button2.Text = "Ligar";
                 button2.BackColor = SystemColors.Control;
+                button2.Enabled = true;
                 vertical_ligado = false;
                 button1.Text = "Acoplar";
                 button1.BackColor = SystemColors.Control;
-                button1.Enabled = false;
-                vertical_ligado = false;
+                button1.Enabled = true;
+                vertical_energizado = false;
                 MessageBox.Show("O motor vertical parou!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
-        private void AtualizarInterfaceHorizontal(bool ligado)
+        private void AtualizarInterfaceMotorHorizontal(bool ligado)
         {
             if (!ligado)
             {
                 button5.Text = "Parar";
                 button5.BackColor = Color.Red;
+                button5.Enabled = true;
                 horizontal_ligado = true;
                 button6.Text = "Acoplado";
                 button6.BackColor = Color.Green;
@@ -362,6 +363,7 @@ namespace Atuadores_LM2C
             {
                 button5.Text = "Ligar";
                 button5.BackColor = SystemColors.Control;
+                button5.Enabled = true;
                 horizontal_ligado = false;
                 button6.Text = "Acoplar";
                 button6.BackColor = SystemColors.Control;
@@ -373,61 +375,74 @@ namespace Atuadores_LM2C
 
         private async void button2_Click(object sender, EventArgs e)
         {
+            //RecalcularDistanciaEVelocidade();
+
             if (radioButton1.Checked && !radioButton2.Checked)
-            {
-                direcao1 = "B";
-            }
-            else if (!radioButton1.Checked && radioButton2.Checked)
             {
                 direcao1 = "C";
             }
+            else if (!radioButton1.Checked && radioButton2.Checked)
+            {
+                direcao1 = "B";
+            }
+
             else
             {
                 MessageBox.Show("Por favor, selecione uma direção.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (!VerificarTextoValido(richTextBox2) || !VerificarTextoValido(richTextBox3))
+            if (!VerificarTextoValido(richTextBox1) || !VerificarTextoValido(richTextBox2))
             {
                 MessageBox.Show("Por favor, selecione valores válidos para distância e velocidade.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            button2.Enabled = false; // Evita múltiplos cliques
-
+            button2.Enabled = false; // Bloqueia múltiplos cliques
 
             try
             {
-                string comando = string.Format(
+                if (!vertical_ligado)
+                {
+
+                    string comando = string.Format(
                     CultureInfo.InvariantCulture,
                     "T{0};{1};{2};H#",
                     distancia_pulsos1,
                     velocidade_pulsos1,
                     direcao1
-                );
+                    );
 
-                await Task.Run(() =>
+                    Console.WriteLine($"Comando: {comando}");
+
+                    await Task.Run(() =>
+                    {
+                        controleSerial.Enviar("R#");
+                        controleSerial.Enviar("A#");
+                        controleSerial.Enviar(comando);
+                        Console.WriteLine($"Comando Enviado: {comando}");
+                    });
+
+                    vertical_ligado = true;
+                    AtualizarInterfaceMotorVertical(false); // Passa FALSE para atualizar corretamente o botão para "Parar"
+                }
+                else
                 {
-                    controleSerial.Enviar("M#");
-                    controleSerial.Enviar(comando);
-
-                    Console.WriteLine($"Comando Enviado: {comando}");
-
-                    if (vertical_ligado)
+                    await Task.Run(() =>
                     {
                         controleSerial.Enviar("n#");
-                        paradaPorBotao1 = true; // <-- Indicando que foi manual
+                        controleSerial.Enviar("a#");
+                        paradaPorBotao1 = true;
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
-                    }
-                });
+                    });
 
-                // Atualiza interface na thread principal
-                AtualizarInterfaceVertical(vertical_ligado);
-
+                    vertical_ligado = false;
+                    AtualizarInterfaceMotorVertical(true); // Passa TRUE para atualizar corretamente o botão para "Ligar"
+                }
             }
             catch (OperationCanceledException)
             {
-                // Task foi cancelada, pode ignorar
+                // Ignorar cancelamento
             }
             catch (Exception ex)
             {
@@ -435,12 +450,12 @@ namespace Atuadores_LM2C
             }
             finally
             {
-                button2.Enabled = true;
+                button2.Enabled = true; // Reabilita o botão
             }
         }
 
 
- 
+
 
         private void button6_Click(object sender, EventArgs e)
         {
@@ -454,7 +469,7 @@ namespace Atuadores_LM2C
             {
                 controleSerial.Enviar("R#"); // Seleciona motor vertical
 
-                if (horizontal_energizado)
+                if (horizontal_energizado == false)
                 {
                     // Enviar comando para energizar o motor
                     controleSerial.Enviar("#A");
@@ -500,6 +515,8 @@ namespace Atuadores_LM2C
 
         private async void button5_Click(object sender, EventArgs e)
         {
+            //RecalcularDistanciaEVelocidade();
+
             if (radioButton3.Checked && !radioButton4.Checked)
             {
                 direcao2 = "B";
@@ -514,47 +531,57 @@ namespace Atuadores_LM2C
                 return;
             }
 
-            if (!VerificarTextoValido(richTextBox4) || !VerificarTextoValido(richTextBox5))
+            if (!VerificarTextoValido(richTextBox5) || !VerificarTextoValido(richTextBox4))
             {
                 MessageBox.Show("Por favor, selecione valores válidos para distância e velocidade.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            button5.Enabled = false; // Evita múltiplos cliques
-
+            button5.Enabled = false; // Bloqueia múltiplos cliques
 
             try
             {
-                string comando = string.Format(
+                if (!horizontal_ligado)
+                {
+
+                    string comando = string.Format(
                     CultureInfo.InvariantCulture,
                     "T{0};{1};{2};H#",
                     distancia_pulsos2,
                     velocidade_pulsos2,
                     direcao2
-                );
+                    );
 
-                await Task.Run(() =>
+                    Console.WriteLine($"Comando: {comando}");
+
+                    await Task.Run(() =>
+                    {
+                        controleSerial.Enviar("M#");
+                        controleSerial.Enviar("A#");
+                        controleSerial.Enviar(comando);
+                        Console.WriteLine($"Comando Enviado: {comando}");
+                    });
+
+                    horizontal_ligado = true;
+                    AtualizarInterfaceMotorHorizontal(false); // Passa FALSE para atualizar corretamente o botão para "Parar"
+                }
+                else
                 {
-                    controleSerial.Enviar("R#");
-                    controleSerial.Enviar(comando);
-
-                    Console.WriteLine($"Comando Enviado: {comando}");
-
-                    if (horizontal_ligado)
+                    await Task.Run(() =>
                     {
                         controleSerial.Enviar("n#");
-                        paradaPorBotao2 = true; // <-- Indicando que foi manual
+                        controleSerial.Enviar("a#");
+                        paradaPorBotao2 = true;
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
-                    }
-                });
+                    });
 
-                // Atualiza interface na thread principal
-                AtualizarInterfaceHorizontal(horizontal_ligado);
-
+                    horizontal_ligado = false;
+                    AtualizarInterfaceMotorHorizontal(true); // Passa TRUE para atualizar corretamente o botão para "Ligar"
+                }
             }
             catch (OperationCanceledException)
             {
-                // Task foi cancelada, pode ignorar
+                // Ignorar cancelamento
             }
             catch (Exception ex)
             {
@@ -562,10 +589,9 @@ namespace Atuadores_LM2C
             }
             finally
             {
-                button5.Enabled = true;
+                button5.Enabled = true; // Reabilita o botão
             }
         }
-
 
         private void richTextBox2_TextChanged(object sender, EventArgs e)
         {
@@ -597,6 +623,11 @@ namespace Atuadores_LM2C
         {
             Form2_Ajuda form2_ajuda = new Form2_Ajuda();
             form2_ajuda.ShowDialog();
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
 
         private void richTextBox3_TextChanged(object sender, EventArgs e)
