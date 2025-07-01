@@ -163,7 +163,7 @@ namespace Atuadores_LM2C
 
         private void richTextBox6_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(richTextBox1.Text))
+            if (!string.IsNullOrWhiteSpace(richTextBox6.Text))
             {
                 // Substitui pontos por vírgulas para o formato brasileiro
                 string inputConstanteCalibracao2 = richTextBox6.Text.Replace('.', ',');
@@ -218,7 +218,7 @@ namespace Atuadores_LM2C
 
         private void richTextBox4_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(richTextBox6.Text))
+            if (!string.IsNullOrWhiteSpace(richTextBox4.Text))
             {
                 // Substitui pontos por vírgulas para o formato brasileiro
                 string inputDistancia2 = richTextBox4.Text.Replace('.', ',');
@@ -254,7 +254,7 @@ namespace Atuadores_LM2C
 
             try
             {
-                controleSerial.Enviar("M#"); // Seleciona motor vertical
+                controleSerial.Enviar("R#"); // Seleciona motor vertical
 
                 if (vertical_energizado == false)
                 {
@@ -459,7 +459,7 @@ namespace Atuadores_LM2C
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (vertical_ligado)
+            if (horizontal_ligado)
             {
                 MessageBox.Show("Pare os motores antes de desenergizá-los.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -467,21 +467,21 @@ namespace Atuadores_LM2C
 
             try
             {
-                controleSerial.Enviar("R#"); // Seleciona motor vertical
+                controleSerial.Enviar("M#"); // Seleciona motor horizontal
 
                 if (horizontal_energizado == false)
                 {
                     // Enviar comando para energizar o motor
                     controleSerial.Enviar("#A");
-                    button1.Text = "Acoplado";
-                    button1.BackColor = Color.Green;
+                    button6.Text = "Acoplado";
+                    button6.BackColor = Color.Green;
                 }
                 else
                 {
                     // Enviar comando para desenergizar o motor
                     controleSerial.Enviar("#a");
-                    button1.Text = "Acoplar";
-                    button1.BackColor = SystemColors.Control;
+                    button6.Text = "Acoplar";
+                    button6.BackColor = SystemColors.Control;
                 }
 
                 // Inverter o estado da variável
