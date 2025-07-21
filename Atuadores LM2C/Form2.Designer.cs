@@ -247,6 +247,7 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(202, 488);
             this.panel2.TabIndex = 1;
+            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
             // radioButton4
             // 
@@ -260,6 +261,7 @@
             this.radioButton4.TabStop = true;
             this.radioButton4.Text = "Frente";
             this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
             // 
             // radioButton3
             // 
@@ -412,7 +414,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(436, 531);
+            this.ClientSize = new System.Drawing.Size(467, 531);
             this.Controls.Add(this.btnAjuda);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);

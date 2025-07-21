@@ -22,17 +22,11 @@ namespace Atuadores_LM2C
         double distancia_pulsos2;
         double velocidade_pulsos1;
         double velocidade_pulsos2;
-#pragma warning disable CS0649 // Campo "Form2.distancia_mm2" nunca é atribuído e sempre terá seu valor padrão 0
-#pragma warning disable CS0649 // Campo "Form2.distancia_mm1" nunca é atribuído e sempre terá seu valor padrão 0
-#pragma warning disable CS0649 // Campo "Form2.velocidade_mm2" nunca é atribuído e sempre terá seu valor padrão 0
-#pragma warning disable CS0649 // Campo "Form2.velocidade_mm1" nunca é atribuído e sempre terá seu valor padrão 0
         double velocidade_mm1, velocidade_mm2, distancia_mm1, distancia_mm2;
-#pragma warning restore CS0649 // Campo "Form2.velocidade_mm1" nunca é atribuído e sempre terá seu valor padrão 0
-#pragma warning restore CS0649 // Campo "Form2.velocidade_mm2" nunca é atribuído e sempre terá seu valor padrão 0
-#pragma warning restore CS0649 // Campo "Form2.distancia_mm1" nunca é atribuído e sempre terá seu valor padrão 0
-#pragma warning restore CS0649 // Campo "Form2.distancia_mm2" nunca é atribuído e sempre terá seu valor padrão 0
         double constanteCalibracao1 = 1;  //A constante de calibração default dos motores que representa a velocidade de aceleração de 2500pulsos/s
         double constanteCalibracao2 = 1;
+
+        //flags acionamento do motor
         bool vertical_energizado = false;
         bool horizontal_energizado = false;
         bool vertical_ligado = false;
@@ -77,11 +71,12 @@ namespace Atuadores_LM2C
                 switch (comando)
                 {
                     case 'y':
-                        if (vertical_ligado)
+                        if (vertical_ligado == true)
                         {
+                            vertical_ligado = false;
                             AtualizarInterfaceMotorVertical(vertical_ligado);
 
-                            if (paradaPorBotao1)
+                            if (paradaPorBotao1 == true)
                             {
                                 paradaPorBotao1 = false;
                             }
@@ -93,11 +88,12 @@ namespace Atuadores_LM2C
                         break;
 
                     case 'Y':
-                        if (horizontal_ligado)
+                        if (horizontal_ligado == true)
                         {
+                            horizontal_ligado = false;
                             AtualizarInterfaceMotorHorizontal(horizontal_ligado);
 
-                            if (paradaPorBotao2)
+                            if (paradaPorBotao2 == true)
                             {
                                 paradaPorBotao2 = false;
                             }
@@ -122,6 +118,11 @@ namespace Atuadores_LM2C
         private void Form2_Load(object sender, EventArgs e)
         {
             this.FormClosing += Form2_FormClosing;
+            richTextBox2.Enabled = false;
+            richTextBox3.Enabled = false;
+            richTextBox4.Enabled = false;
+            richTextBox5.Enabled = false;
+
         }
 
         private void CancelarTarefasForm()
@@ -149,15 +150,23 @@ namespace Atuadores_LM2C
 
         }
 
-        private void RecalcularDistanciaEVelocidade()
+        private void RecalcularDistanciaEVelocidade1()
         {
             // Recalcula os pulsos de distância e velocidade com a nova constante de calibração
             if (constanteCalibracao1 != 0)
             {
-                distancia_pulsos1 = (float)Math.Round(distancia_mm1 / constanteCalibracao1);
-                distancia_pulsos2 = (float)Math.Round(distancia_mm2 / constanteCalibracao1);
-                velocidade_pulsos1 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
-                velocidade_pulsos2 = (float)Math.Round(velocidade_mm2 / constanteCalibracao1);
+                distancia_pulsos1 = (float)(distancia_mm1 / constanteCalibracao1);
+                velocidade_pulsos1 = (float)(velocidade_mm1 / constanteCalibracao1);
+                Console.WriteLine("Velocidade recalculada: " + velocidade_pulsos1); 
+            }
+        }
+        private void RecalcularDistanciaEVelocidade2()
+        {
+            
+            if (constanteCalibracao2 != 0)
+            {
+                distancia_pulsos2 = (float)(distancia_mm2 / constanteCalibracao2);
+                velocidade_pulsos2 = (float)(velocidade_mm2 / constanteCalibracao2);
             }
         }
 
@@ -167,6 +176,7 @@ namespace Atuadores_LM2C
             {
                 // Substitui pontos por vírgulas para o formato brasileiro
                 string inputConstanteCalibracao2 = richTextBox6.Text.Replace('.', ',');
+                richTextBox5.Enabled = true;
 
                 // Tenta converter a string para double
                 if (double.TryParse(inputConstanteCalibracao2, NumberStyles.Any, new CultureInfo("pt-BR"), out double valorConvertido))
@@ -174,7 +184,7 @@ namespace Atuadores_LM2C
                     constanteCalibracao2 = valorConvertido; // Atualiza apenas se a conversão for bem-sucedida
 
                     // Agora recalcula as variáveis de distância e velocidade com a nova constante de calibração
-                    RecalcularDistanciaEVelocidade();
+                    RecalcularDistanciaEVelocidade2();
                 }
                 else
                 {
@@ -183,10 +193,11 @@ namespace Atuadores_LM2C
             }
             else
             {
-                constanteCalibracao2= 1; // Define um valor padrão quando o campo está vazio
+                constanteCalibracao2 = 1; // Define um valor padrão quando o campo está vazio
+                richTextBox5.Enabled = false;
 
                 // Recalcula as variáveis de distância e velocidade com o valor padrão
-                RecalcularDistanciaEVelocidade();
+                RecalcularDistanciaEVelocidade2();
             }
         }
 
@@ -196,6 +207,7 @@ namespace Atuadores_LM2C
             {
                 // Substitui pontos por vírgulas para o formato brasileiro
                 string inputVelocidade2 = richTextBox5.Text.Replace('.', ',');
+                richTextBox4.Enabled = true;
 
                 // Tenta converter a string para float
                 if (float.TryParse(inputVelocidade2, NumberStyles.Any, new CultureInfo("pt-BR"), out float velocidade_mm2))
@@ -213,6 +225,7 @@ namespace Atuadores_LM2C
             {
                 // Define valores padrão caso o campo fique vazio
                 velocidade_pulsos2 = 0;
+                richTextBox4.Enabled = false;
             }
         }
 
@@ -319,63 +332,53 @@ namespace Atuadores_LM2C
         }
 
      
-        private void AtualizarInterfaceMotorVertical(bool ligado)
+        private void AtualizarInterfaceMotorVertical(bool vertical)
         {
-            if (!ligado)
+            if (vertical == true)
             {
                 button2.Text = "Parar";
                 button2.BackColor = Color.Red;
                 button2.Enabled = true;
-                vertical_ligado = true;
                 button1.Text = "Acoplado";
                 button1.BackColor = Color.Green;
                 button1.Enabled = false;
-                vertical_energizado = true;
             }
             else
             {
                 button2.Text = "Ligar";
                 button2.BackColor = SystemColors.Control;
                 button2.Enabled = true;
-                vertical_ligado = false;
                 button1.Text = "Acoplar";
                 button1.BackColor = SystemColors.Control;
                 button1.Enabled = true;
-                vertical_energizado = false;
                 MessageBox.Show("O motor vertical parou!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         private void AtualizarInterfaceMotorHorizontal(bool ligado)
         {
-            if (!ligado)
+            if (ligado == true)
             {
                 button5.Text = "Parar";
                 button5.BackColor = Color.Red;
                 button5.Enabled = true;
-                horizontal_ligado = true;
                 button6.Text = "Acoplado";
                 button6.BackColor = Color.Green;
                 button6.Enabled = false;
-                horizontal_energizado = true;
             }
             else
             {
                 button5.Text = "Ligar";
                 button5.BackColor = SystemColors.Control;
                 button5.Enabled = true;
-                horizontal_ligado = false;
                 button6.Text = "Acoplar";
                 button6.BackColor = SystemColors.Control;
                 button6.Enabled = true;
-                horizontal_energizado = false;
                 MessageBox.Show("O motor horizontal parou!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
         private async void button2_Click(object sender, EventArgs e)
         {
-            //RecalcularDistanciaEVelocidade();
 
             if (radioButton1.Checked && !radioButton2.Checked)
             {
@@ -392,7 +395,7 @@ namespace Atuadores_LM2C
                 return;
             }
 
-            if (!VerificarTextoValido(richTextBox1) || !VerificarTextoValido(richTextBox2))
+            if (!VerificarTextoValido(richTextBox1) || !VerificarTextoValido(richTextBox2) || !VerificarTextoValido(richTextBox1))
             {
                 MessageBox.Show("Por favor, selecione valores válidos para distância e velocidade.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -402,9 +405,8 @@ namespace Atuadores_LM2C
 
             try
             {
-                if (!vertical_ligado)
-                {
-
+                if (vertical_ligado == false)
+                {                  
                     string comando = string.Format(
                     CultureInfo.InvariantCulture,
                     "T{0};{1};{2};H#",
@@ -424,12 +426,13 @@ namespace Atuadores_LM2C
                     });
 
                     vertical_ligado = true;
-                    AtualizarInterfaceMotorVertical(false); // Passa FALSE para atualizar corretamente o botão para "Parar"
+                    AtualizarInterfaceMotorVertical(vertical_ligado); 
                 }
                 else
                 {
                     await Task.Run(() =>
                     {
+                        controleSerial.Enviar("R#");
                         controleSerial.Enviar("n#");
                         controleSerial.Enviar("a#");
                         paradaPorBotao1 = true;
@@ -437,7 +440,7 @@ namespace Atuadores_LM2C
                     });
 
                     vertical_ligado = false;
-                    AtualizarInterfaceMotorVertical(true); // Passa TRUE para atualizar corretamente o botão para "Ligar"
+                    AtualizarInterfaceMotorVertical(vertical_ligado); 
                 }
             }
             catch (OperationCanceledException)
@@ -515,7 +518,6 @@ namespace Atuadores_LM2C
 
         private async void button5_Click(object sender, EventArgs e)
         {
-            //RecalcularDistanciaEVelocidade();
 
             if (radioButton3.Checked && !radioButton4.Checked)
             {
@@ -531,7 +533,7 @@ namespace Atuadores_LM2C
                 return;
             }
 
-            if (!VerificarTextoValido(richTextBox5) || !VerificarTextoValido(richTextBox4))
+            if (!VerificarTextoValido(richTextBox5) || !VerificarTextoValido(richTextBox4) || !VerificarTextoValido(richTextBox6))
             {
                 MessageBox.Show("Por favor, selecione valores válidos para distância e velocidade.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -541,9 +543,8 @@ namespace Atuadores_LM2C
 
             try
             {
-                if (!horizontal_ligado)
+                if (horizontal_ligado == false)
                 {
-
                     string comando = string.Format(
                     CultureInfo.InvariantCulture,
                     "T{0};{1};{2};H#",
@@ -563,12 +564,13 @@ namespace Atuadores_LM2C
                     });
 
                     horizontal_ligado = true;
-                    AtualizarInterfaceMotorHorizontal(false); // Passa FALSE para atualizar corretamente o botão para "Parar"
+                    AtualizarInterfaceMotorHorizontal(horizontal_ligado); // Passa FALSE para atualizar corretamente o botão para "Parar"
                 }
                 else
                 {
                     await Task.Run(() =>
                     {
+                        controleSerial.Enviar("M#");
                         controleSerial.Enviar("n#");
                         controleSerial.Enviar("a#");
                         paradaPorBotao2 = true;
@@ -576,7 +578,7 @@ namespace Atuadores_LM2C
                     });
 
                     horizontal_ligado = false;
-                    AtualizarInterfaceMotorHorizontal(true); // Passa TRUE para atualizar corretamente o botão para "Ligar"
+                    AtualizarInterfaceMotorHorizontal(horizontal_ligado); // Passa TRUE para atualizar corretamente o botão para "Ligar"
                 }
             }
             catch (OperationCanceledException)
@@ -599,13 +601,17 @@ namespace Atuadores_LM2C
             {
                 // Substitui pontos por vírgulas para o formato brasileiro
                 string inputVelocidade1 = richTextBox2.Text.Replace('.', ',');
+                richTextBox3.Enabled = true;
 
                 // Tenta converter a string para float
                 if (float.TryParse(inputVelocidade1, NumberStyles.Any, new CultureInfo("pt-BR"), out float velocidade_mm1))
                 {
                     // Calcula os pulsos com base no valor convertido
                     if (constanteCalibracao1 != 0)
+                    {
                         velocidade_pulsos1 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
+                        Console.WriteLine("Velocidade dividida pela constante: " + velocidade_pulsos1);
+                    }
                 }
                 else
                 {
@@ -616,6 +622,7 @@ namespace Atuadores_LM2C
             {
                 // Define valores padrão caso o campo fique vazio
                 velocidade_pulsos1 = 0;
+                richTextBox3.Enabled = false;
             }
         }
 
@@ -626,6 +633,16 @@ namespace Atuadores_LM2C
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
         {
 
         }
@@ -642,7 +659,9 @@ namespace Atuadores_LM2C
                 {
                     // Calcula os pulsos com base no valor convertido
                     if (constanteCalibracao1 != 0)
+                    {
                         distancia_pulsos1 = (float)Math.Round(distancia_mm1 / constanteCalibracao1);
+                    }
 
                 }
                 else
@@ -665,13 +684,15 @@ namespace Atuadores_LM2C
                 // Substitui pontos por vírgulas para o formato brasileiro
                 string inputConstanteCalibracao1 = richTextBox1.Text.Replace('.', ',');
 
+                richTextBox2.Enabled = true;
+
                 // Tenta converter a string para double
                 if (double.TryParse(inputConstanteCalibracao1, NumberStyles.Any, new CultureInfo("pt-BR"), out double valorConvertido))
                 {
                     constanteCalibracao1 = valorConvertido; // Atualiza apenas se a conversão for bem-sucedida
 
                     // Agora recalcula as variáveis de distância e velocidade com a nova constante de calibração
-                    RecalcularDistanciaEVelocidade();
+                    RecalcularDistanciaEVelocidade1();
                 }
                 else
                 {
@@ -681,9 +702,10 @@ namespace Atuadores_LM2C
             else
             {
                 constanteCalibracao1 = 1; // Define um valor padrão quando o campo está vazio
+                richTextBox2.Enabled = false;
 
                 // Recalcula as variáveis de distância e velocidade com o valor padrão
-                RecalcularDistanciaEVelocidade();
+                RecalcularDistanciaEVelocidade1();
             }
         }
 

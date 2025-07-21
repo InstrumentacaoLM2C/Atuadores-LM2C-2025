@@ -179,5 +179,43 @@ namespace Atuadores_LM2C
            FormCalibrar form4 = new FormCalibrar(controleSerial);
             form4.Show();
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (controleSerial == null || !controleSerial.EstaConectado)
+            {
+                MessageBox.Show("Por favor, conecte-se à porta serial antes de abrir",
+                                "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using (Form7 form7 = new Form7(controleSerial))
+                {
+                    form7.ShowDialog(); // Exibe o Form3 de forma modal
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("Acesso negado à porta serial. Verifique se o dispositivo está conectado corretamente ou se a porta já está em uso.",
+                                "Erro de Acesso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("A operação não pôde ser completada. Verifique se a porta serial está configurada corretamente e tente novamente.",
+                                "Erro de Operação", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Falha de comunicação com a porta serial. Certifique-se de que o dispositivo está conectado corretamente.",
+                                "Erro de Comunicação", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro inesperado ao enviar comando: {ex.Message}",
+                                "Erro Desconhecido", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
