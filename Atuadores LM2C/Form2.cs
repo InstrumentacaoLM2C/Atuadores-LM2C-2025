@@ -382,11 +382,11 @@ namespace Atuadores_LM2C
 
             if (radioButton1.Checked && !radioButton2.Checked)
             {
-                direcao1 = "C";
+                direcao1 = "B";
             }
             else if (!radioButton1.Checked && radioButton2.Checked)
             {
-                direcao1 = "B";
+                direcao1 = "C";
             }
 
             else
