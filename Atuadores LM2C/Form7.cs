@@ -292,6 +292,10 @@ namespace Atuadores_LM2C
                 button4.BackColor = Color.Green;
                 button4.Enabled = false;
                 motor_energizado_universal = true;
+                button1.Enabled = false;
+                button2.Enabled = false;
+                button5.Enabled = false;
+                button6.Enabled = false;
             }
             else
             {
@@ -303,13 +307,17 @@ namespace Atuadores_LM2C
                 button4.BackColor = SystemColors.Control;
                 button4.Enabled = true;
                 motor_energizado_universal = false;
+                button1.Enabled = true;
+                button2.Enabled = true;
+                button5.Enabled = true;
+                button6.Enabled = true;
                 MessageBox.Show("Os motores pararam!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         private async void button2_Click(object sender, EventArgs e)
         {
-            ''//RecalcularDistanciaEVelocidade();
+            //RecalcularDistanciaEVelocidade();
 
             if (radioButton1.Checked && !radioButton2.Checked)
             {
@@ -713,6 +721,10 @@ namespace Atuadores_LM2C
             }
 
             button3.Enabled = false; // Bloqueia múltiplos cliques
+            button1.Enabled = false;
+            button2.Enabled = false;
+            button5.Enabled = false;
+            button6.Enabled = false;
 
             try
             {
@@ -751,6 +763,10 @@ namespace Atuadores_LM2C
                     });
 
                     motor_ligado_universal = true;
+                    // Garanta que os individuais também reflitam o estado
+                    motor_ligado = true;
+                    motor_ligado_falha = true;
+                    
                     AtualizarInterfaceMotorUniversal(false); // Passa FALSE para atualizar corretamente o botão para "Parar"
                 }
                 else
@@ -768,7 +784,10 @@ namespace Atuadores_LM2C
                     });
 
                     motor_ligado_universal = false;
-                    AtualizarInterfaceMotorUniversal(true); // Passa TRUE para atualizar corretamente o botão para "Ligar"
+                    // Zere também os individuais
+                    motor_ligado = false;
+                    motor_ligado_falha = false;
+                    AtualizarInterfaceMotorUniversal(true);
                 }
 
               
@@ -784,6 +803,10 @@ namespace Atuadores_LM2C
             finally
             {
                 button3.Enabled = true; // Reabilita o botão
+                button1.Enabled = true;
+                button2.Enabled = true;
+                button5.Enabled = true;
+                button6.Enabled = true;
             }
         }
 
