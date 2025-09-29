@@ -15,7 +15,7 @@ namespace Atuadores_LM2C
 {
     public partial class Form7 : Form
     {
-
+       
         //Declaração de Variáveis
 
         //------------- INICIO -------------
@@ -24,6 +24,8 @@ namespace Atuadores_LM2C
 
         private ControleSerial controleSerial;
         private bool paradaPorBotao = false;
+        private bool paradaPorBotaoFalha = false;
+        private bool paradaPorBotaoSimultaneo = false;
 
 
 
@@ -31,6 +33,8 @@ namespace Atuadores_LM2C
         string direcao2 = "";
         float distancia_mm1 = 0.0f;
         float velocidade_mm1 = 0.0f;
+        float distancia_mm2 = 0.0f;
+        float velocidade_mm2 = 0.0f;
         float distancia_pulsos1 = 0.0f;  // Pulsos do motor vertical
         float distancia_pulsos2 = 0.0f;
         float velocidade_pulsos1 = 0.0f;
@@ -86,7 +90,54 @@ namespace Atuadores_LM2C
 
                 switch (comando)
                 {
-                    
+                    case 'y':
+                        if (motor_ligado == true)
+                        {
+                            AtualizarInterfaceMotor(motor_ligado);
+
+                            if (paradaPorBotao == true)
+                            {
+                                paradaPorBotao = false;
+                                
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        
+                        if (motor_ligado_universal == true)
+                        {
+                            AtualizarInterfaceMotorUniversal(motor_ligado_universal);
+
+                            if(paradaPorBotaoSimultaneo == true)
+                            {
+                                paradaPorBotaoSimultaneo = false;
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        break;
+
+                    case 'Y':
+                        if (motor_ligado_falha == true)
+                        {
+                            motor_ligado_falha = false;
+                            AtualizarInterfaceMotorFalha(motor_ligado_falha);
+
+                            if (paradaPorBotaoFalha == true)
+                            {
+                                paradaPorBotaoFalha = false;
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        break;
+
                     default:
                         break;
                 }
@@ -110,13 +161,20 @@ namespace Atuadores_LM2C
 
         private void RecalcularDistanciaEVelocidade()
         {
-            // Recalcula os pulsos de distância e velocidade com a nova constante de calibração
-            if (constanteCalibracao1 != 0)
+            // Par 1 e 2
+            if (double.TryParse(richTextBox3.Text.Replace('.', ','), out double distancia12) &&
+                double.TryParse(richTextBox2.Text.Replace('.', ','), out double velocidade12))
             {
-                distancia_pulsos1 = (float)Math.Round(distancia_mm1 / constanteCalibracao1);
-                distancia_pulsos2 = (float)Math.Round(distancia_mm1 / constanteCalibracao1);
-                velocidade_pulsos1 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
-                velocidade_pulsos2 = (float)Math.Round(velocidade_mm1 / constanteCalibracao1);
+                distancia_pulsos1 = distancia_pulsos2 = (long)Math.Round(distancia12 / constanteCalibracao1);
+                velocidade_pulsos1 = velocidade_pulsos2 = (long)Math.Round(velocidade12 / constanteCalibracao1);
+            }
+
+            // Par 3 e 4
+            if (double.TryParse(richTextBox4.Text.Replace('.', ','), out double distancia34) &&
+                double.TryParse(richTextBox5.Text.Replace('.', ','), out double velocidade34))
+            {
+                distancia_pulsos3 = distancia_pulsos4 = (long)Math.Round(distancia34 / constanteCalibracao2);
+                velocidade_pulsos3 = velocidade_pulsos4 = (long)Math.Round(velocidade34 / constanteCalibracao2);
             }
         }
 
@@ -162,6 +220,8 @@ namespace Atuadores_LM2C
                 {
                     // Calcula os pulsos com base no valor convertido
                     if (constanteCalibracao1 != 0)
+                        velocidade_mm1 = velocidade;
+
                         velocidade_pulsos1 = (float)Math.Round(velocidade / constanteCalibracao1);
 
                         velocidade_pulsos2 = (float)Math.Round(velocidade / constanteCalibracao1);
@@ -189,6 +249,7 @@ namespace Atuadores_LM2C
                 // Tenta converter a string para float
                 if (float.TryParse(inputDistancia1, NumberStyles.Any, new CultureInfo("pt-BR"), out float distancia))
                 {
+                    distancia_mm1 = distancia;
                     // Calcula os pulsos com base no valor convertido
                     if (constanteCalibracao1 != 0)
                         distancia_pulsos1 = (float)Math.Round(distancia / constanteCalibracao1);
@@ -248,7 +309,7 @@ namespace Atuadores_LM2C
                 button1.Text = "Acoplar";
                 button1.BackColor = SystemColors.Control;
                 button1.Enabled = true;
-                motor_energizado_falha = false;
+                motor_energizado = false;
                 MessageBox.Show("Os motores pararam!", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -288,6 +349,8 @@ namespace Atuadores_LM2C
                 button3.BackColor = Color.Red;
                 button3.Enabled = true;
                 motor_ligado_universal = true;
+                motor_ligado = true;
+                motor_ligado_falha = true;
                 button4.Text = "Acoplados";
                 button4.BackColor = Color.Green;
                 button4.Enabled = false;
@@ -303,6 +366,8 @@ namespace Atuadores_LM2C
                 button3.BackColor = SystemColors.Control;
                 button3.Enabled = true;
                 motor_ligado_universal = false;
+                motor_ligado = false;
+                motor_ligado_falha = false;
                 button4.Text = "Acoplar Simultâneo";
                 button4.BackColor = SystemColors.Control;
                 button4.Enabled = true;
@@ -499,8 +564,9 @@ namespace Atuadores_LM2C
                 // Tenta converter a string para float
                 if (float.TryParse(inputVelocidade2, NumberStyles.Any, new CultureInfo("pt-BR"), out float velocidade))
                 {
+                    velocidade_mm2 = velocidade;
                     // Calcula os pulsos com base no valor convertido
-                    if (constanteCalibracao1 != 0)
+                    if (constanteCalibracao2 != 0)
                         velocidade_pulsos3 = (float)Math.Round(velocidade / constanteCalibracao2);
 
                     velocidade_pulsos4 = velocidade_pulsos3;
@@ -529,6 +595,7 @@ namespace Atuadores_LM2C
                 // Tenta converter a string para float
                 if (float.TryParse(inputDistancia2, NumberStyles.Any, new CultureInfo("pt-BR"), out float distancia))
                 {
+                    distancia_mm2 = distancia;
                     // Calcula os pulsos com base no valor convertido
                     if (constanteCalibracao2 != 0)
                         distancia_pulsos3 = (float)Math.Round(distancia / constanteCalibracao2);
@@ -569,7 +636,7 @@ namespace Atuadores_LM2C
                 return;
             }
 
-            if (!VerificarTextoValido(richTextBox4) || !VerificarTextoValido(richTextBox5))
+            if (!VerificarTextoValido(richTextBox4) || !VerificarTextoValido(richTextBox5) || !VerificarTextoValido(richTextBox6))
             {
                 MessageBox.Show("Por favor, selecione valores válidos para distância e velocidade.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -612,7 +679,7 @@ namespace Atuadores_LM2C
                         controleSerial.Enviar("l#");
                         controleSerial.Enviar("n#");
                         controleSerial.Enviar("a#");
-                        paradaPorBotao = true;
+                        paradaPorBotaoFalha = true;
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
                     });
 
@@ -692,6 +759,7 @@ namespace Atuadores_LM2C
 
         private async void button3_Click(object sender, EventArgs e)
         {
+            RecalcularDistanciaEVelocidade();
             if (radioButton1.Checked && !radioButton2.Checked)
             {
                 direcao = "B";
@@ -779,7 +847,7 @@ namespace Atuadores_LM2C
                         controleSerial.Enviar("l#");
                         controleSerial.Enviar("n#");
                         controleSerial.Enviar("a#");
-                        paradaPorBotao = true;
+                        paradaPorBotaoSimultaneo = true;
                         Console.WriteLine("Comando Enviado: n# (Parar motor)");
                     });
 
@@ -869,5 +937,10 @@ namespace Atuadores_LM2C
                                 "Erro Desconhecido", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
     }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

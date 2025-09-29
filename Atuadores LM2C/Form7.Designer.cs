@@ -99,6 +99,7 @@
             this.radioButton3.TabStop = true;
             this.radioButton3.Text = "Atrás";
             this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
             // 
             // button5
             // 
