@@ -91,9 +91,26 @@ namespace Atuadores_LM2C
                 switch (comando)
                 {
                     case 'y':
+
+                        if (motor_ligado_universal == true)
+                        {
+                            AtualizarInterfaceMotorUniversal(motor_ligado_universal);
+                            motor_ligado_universal = false;
+
+                            if (paradaPorBotaoSimultaneo == true)
+                            {
+                                paradaPorBotaoSimultaneo = false;
+                            }
+                            else
+                            {
+
+                            }
+                        }
+
                         if (motor_ligado == true)
                         {
                             AtualizarInterfaceMotor(motor_ligado);
+                            motor_ligado = false;
 
                             if (paradaPorBotao == true)
                             {
@@ -106,26 +123,14 @@ namespace Atuadores_LM2C
                             }
                         }
                         
-                        if (motor_ligado_universal == true)
-                        {
-                            AtualizarInterfaceMotorUniversal(motor_ligado_universal);
-
-                            if(paradaPorBotaoSimultaneo == true)
-                            {
-                                paradaPorBotaoSimultaneo = false;
-                            }
-                            else
-                            {
-
-                            }
-                        }
                         break;
 
                     case 'Y':
                         if (motor_ligado_falha == true)
                         {
-                            motor_ligado_falha = false;
                             AtualizarInterfaceMotorFalha(motor_ligado_falha);
+                            motor_ligado_falha = false;
+                            
 
                             if (paradaPorBotaoFalha == true)
                             {
